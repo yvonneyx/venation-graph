@@ -1,4 +1,4 @@
-import G6 from '@antv/g6'
+import G6, { INode, NodeConfig } from '@antv/g6'
 import { createFields } from '../utils/createFields'
 
 export const tooltip = new G6.Tooltip({
@@ -7,16 +7,17 @@ export const tooltip = new G6.Tooltip({
   fixToNode: [0, 1],
   itemTypes: ['node'],
   trigger: 'mouseenter',
-  shouldBegin: (evt) => {
+  shouldBegin: (e) => {
+    const model = e?.item!.getModel()
     const arr = ['FEATURE', 'DATA_SOURCE', 'NEWTON_EVENT', 'NEWTON_FIELD']
-    const nodeType = evt?.item!.getModel().originData.nodeType
+    const nodeType = model?.originData.nodeType
     return arr.includes(nodeType)
   },
-  getContent: (evt) => {
+  getContent: (e) => {
     const outDiv = document.createElement('div')
     outDiv.style.width = '180px'
 
-    const model = evt?.item!.getModel()
+    const model = e?.item!.getModel()
     const field = createFields(model?.originData)
 
     outDiv.innerHTML += '<div>'

@@ -1,5 +1,4 @@
 import G6 from '@antv/g6'
-import { reactive } from 'vue'
 import { defaultStyle, nodeStyleMap } from './nodeStyleMap'
 
 let centerX
@@ -17,9 +16,9 @@ const BaseConfig = {
 }
 
 G6.registerNode(
-  'rect-with-count',
+  'node-with-count',
   {
-    draw: (cfg, group) => {
+    draw(cfg, group) {
       const { id, title, collapsed, children, depth, originData, placement } =
         cfg
 
@@ -90,7 +89,6 @@ G6.registerNode(
 
       if (rootNode) {
         centerX = cfg?.x
-
         keyShape.attr({
           width: width + rootPadding,
         })
@@ -113,7 +111,7 @@ G6.registerNode(
             cursor: 'pointer',
             fill: '#fff',
           },
-          name: 'collapse-rect',
+          name: 'collapse-rect-shape',
           modelId: id,
         })
 
@@ -132,7 +130,7 @@ G6.registerNode(
             cursor: 'pointer',
             fill: 'rgba(0, 0, 0, 0.5)',
           },
-          name: 'collapse-text',
+          name: 'collapse-text-shape',
           modelId: id,
         })
       }
@@ -141,7 +139,7 @@ G6.registerNode(
     },
     update: (cfg, item) => {
       const group = item.getContainer()
-      const icon = group.find((e) => e.get('name') === 'collapse-text')
+      const icon = group.find((e) => e.get('name') === 'collapse-text-shape')
       icon.attr('text', cfg.collapsed ? `${cfg.children.length}` : '-')
       icon.attr('y', cfg.collapsed ? 0 : -1)
     },
@@ -150,35 +148,38 @@ G6.registerNode(
 )
 
 const BasicLineConfig = {
-  lineWidth: 1,
-  stroke: '#A3B1BF',
-  endArrow: {
-    path: 'M 0,0 L 6, 3 L 4,0 L 6, -3 Z',
-    fill: '#A3B1BF',
-    d: 0,
-  },
+	lineWidth: 1,
+	stroke: '#A3B1BF',
+	endArrow: {
+		path: 'M 0,0 L 6, 3 L 4,0 L 6, -3 Z',
+		fill: '#A3B1BF',
+		d: 0,
+	},
 }
 
 G6.registerEdge('line-arrow', {
-  draw: function draw(cfg, group) {
-    const { startPoint, endPoint } = cfg!
-    const keyShape = group.addShape('path', {
-      attrs: {
-        path: [
-          ['M', startPoint.x, startPoint.y],
-          ['L', (startPoint.x + endPoint.x) / 2, startPoint.y],
-          ['L', (startPoint.x + endPoint.x) / 2, endPoint.y],
-          ['L', endPoint.x, endPoint.y],
-        ],
-        stroke: BasicLineConfig.stroke,
-        lineWidth: BasicLineConfig.lineWidth,
-        startArrow: startPoint.x < centerX && BasicLineConfig.endArrow,
-        endArrow: startPoint.x >= centerX && BasicLineConfig.endArrow,
-      },
-      name: 'edge-shape',
-      radius: 10,
-    })
+	draw(cfg, group) {
+		const { startPoint, endPoint } = cfg!
+		const keyShape = group.addShape('path', {
+			attrs: {
+				path: [
+					['M', startPoint.x, startPoint.y],
+					['L', (startPoint.x + endPoint.x) / 2, startPoint.y],
+					['L', (startPoint.x + endPoint.x) / 2, endPoint.y],
+					['L', endPoint.x, endPoint.y],
+				],
+				stroke: BasicLineConfig.stroke,
+				lineWidth: BasicLineConfig.lineWidth,
+				startArrow: startPoint.x < centerX && BasicLineConfig.endArrow,
+				endArrow: startPoint.x >= centerX && BasicLineConfig.endArrow,
+			},
+			name: 'edge-shape',
+			radius: 10,
+		})
 
-    return keyShape
-  },
+		return keyShape
+	},
+	afterDraw(cfg, group) {
+		console.log("afterDraw", this);
+	}
 })
